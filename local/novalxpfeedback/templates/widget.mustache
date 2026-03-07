@@ -1,0 +1,37 @@
+<style>
+.novalxp-feedback-widget{display:grid;gap:.75rem;max-width:100%;justify-items:center}
+.novalxp-feedback-widget__title{font-weight:600;margin:0}
+.novalxp-feedback-widget__controls{display:grid;gap:.75rem;max-width:100%;width:min(100%,32rem)}
+.novalxp-feedback-widget__input{display:block;width:min(100%,32rem);max-width:100%;min-height:5.5rem;resize:vertical;box-sizing:border-box;padding:.9rem 1rem;border:1px solid #d5d9e2;border-radius:.75rem;background:#fff;box-shadow:inset 0 1px 2px rgba(16,24,40,.04)}
+.novalxp-feedback-widget__input:focus{outline:none;border-color:#111;box-shadow:0 0 0 3px rgba(17,17,17,.08)}
+.novalxp-feedback-widget__actions{display:flex;justify-content:flex-start}
+.novalxp-feedback-widget__submit{white-space:nowrap;background:#111;color:#fff;border:1px solid #111;padding:.7rem 1.2rem;border-radius:.4rem}
+.novalxp-feedback-widget__submit:hover,.novalxp-feedback-widget__submit:focus{background:#000;color:#fff;border-color:#000}
+.novalxp-feedback-widget__submit:disabled{opacity:.65}
+.novalxp-feedback-widget__status{margin:0;font-size:.95rem}
+.novalxp-feedback-widget__status[data-state='error']{color:#b42318}
+.novalxp-feedback-widget__status[data-state='success']{color:#027a48}
+</style>
+<div class="novalxp-feedback-widget js-novalxpfeedback" data-empty-error="{{emptyerror}}">
+    {{#title}}
+    <label class="novalxp-feedback-widget__title" for="novalxp-feedback-input">{{title}}</label>
+    {{/title}}
+    <div class="novalxp-feedback-widget__controls">
+        <textarea
+            id="novalxp-feedback-input"
+            class="novalxp-feedback-widget__input"
+            maxlength="500"
+            aria-label="{{inputlabel}}"
+            placeholder="{{placeholder}}"
+        ></textarea>
+        <div class="novalxp-feedback-widget__actions">
+            <button class="novalxp-feedback-widget__submit" type="button">{{submitlabel}}</button>
+        </div>
+    </div>
+    <p class="novalxp-feedback-widget__status" aria-live="polite"></p>
+</div>
+{{#js}}
+require(['local_novalxpfeedback/widget'], function(module) {
+    module.init();
+});
+{{/js}}
