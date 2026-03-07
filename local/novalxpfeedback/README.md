@@ -18,6 +18,12 @@ This plugin adds an inline feedback widget to the Moodle front page and invokes 
 5. Set `Lambda region` to the function region, for example `eu-west-2`.
 6. Purge caches.
 
+Deployed environment mappings currently in use:
+
+- `dev` -> `novalxp-feedback-dev`
+- `test` -> `novalxp-feedback-test`
+- `prod` -> `novalxp-feedback-prod`
+
 ## Edutor integration
 
 The widget is rendered in the second featured panel by the Edutor theme patch already applied on the dev instance. If you need to reproduce that manually, render this template from the relevant theme PHP:
@@ -70,6 +76,8 @@ aws lambda update-function-code \
   --function-name novalxp-feedback-dev \
   --zip-file fileb://function.zip
 ```
+
+Use the corresponding function name per environment when deploying to test or prod.
 
 ### Example environment update
 

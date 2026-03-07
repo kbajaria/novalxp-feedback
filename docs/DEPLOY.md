@@ -2,6 +2,35 @@
 
 This repository contains enough to deploy the NovaLXP feedback feature to new environments, provided you also apply the Edutor theme patch and have access to the target AWS account and Moodle hosts.
 
+## Current deployed environments
+
+- `dev`
+  - site: `https://dev.novalxp.co.uk`
+  - lambda: `novalxp-feedback-dev`
+  - secret: `novalxp/feedback/dev/trello`
+- `test`
+  - site: `https://test.novalxp.co.uk`
+  - lambda: `novalxp-feedback-test`
+  - secret: `novalxp/feedback/test/trello`
+- `prod`
+  - site: `https://learn.novalxp.co.uk`
+  - lambda: `novalxp-feedback-prod`
+  - secret: `novalxp/feedback/prod/trello`
+
+## Shared Moodle role
+
+The current deployment keeps a shared Moodle invoke policy on:
+
+- `MoodleCombinedSSMAndBedrockRole`
+
+That role is allowed to invoke:
+
+- `novalxp-feedback-dev`
+- `novalxp-feedback-test`
+- `novalxp-feedback-prod`
+
+This is an intentional operational choice.
+
 ## What gets deployed
 
 - Moodle plugin: `local/novalxpfeedback`
@@ -104,3 +133,7 @@ If the patch does not apply cleanly, reproduce the changes manually in:
 - Confirm the multiline textarea is visible and centered.
 - Submit a test message.
 - Confirm a Trello card appears in the target list.
+
+## Post-deployment status
+
+As of March 7, 2026, this feature has been deployed and validated in dev, test, and prod.

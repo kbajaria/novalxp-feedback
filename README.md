@@ -49,7 +49,28 @@ What still happens against the target environment at deploy time:
 
 ## Dev status
 
-The feature has been validated on the dev NovaLXP environment with successful end-to-end card creation in Trello.
+The feature has now been validated in all target environments with successful end-to-end card creation in Trello:
+
+- `dev` at `https://dev.novalxp.co.uk`
+- `test` at `https://test.novalxp.co.uk`
+- `prod` at `https://learn.novalxp.co.uk`
+
+Deployed Lambda functions:
+
+- `novalxp-feedback-dev`
+- `novalxp-feedback-test`
+- `novalxp-feedback-prod`
+
+Deployed Secrets Manager secrets:
+
+- `novalxp/feedback/dev/trello`
+- `novalxp/feedback/test/trello`
+- `novalxp/feedback/prod/trello`
+
+Shared Moodle invoke policy choice:
+
+- The Moodle instance role `MoodleCombinedSSMAndBedrockRole` is intentionally shared across environments.
+- It is configured to invoke all three feedback Lambda functions.
 
 Primary references:
 
