@@ -1,5 +1,8 @@
 {
   "name": "novalxp-feedback-lambda",
   "version": "1.0.0",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.882.0"
+  }
 }

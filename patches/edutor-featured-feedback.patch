@@ -1,0 +1,34 @@
+diff --git a/theme/edutor/classes/output/core_renderer.php b/theme/edutor/classes/output/core_renderer.php
+--- a/theme/edutor/classes/output/core_renderer.php
++++ b/theme/edutor/classes/output/core_renderer.php
+@@
+-        $pane2title = (empty($PAGE->theme->settings->pane2title)) ? false : format_text($PAGE->theme->settings->pane2title);  
+-        $pane2intro = (empty($PAGE->theme->settings->pane2intro)) ? false : format_text($PAGE->theme->settings->pane2intro); 
++        $pane2title = (empty($PAGE->theme->settings->pane2title)) ? false : format_text($PAGE->theme->settings->pane2title);  
++        $pane2intro = false;
++        $pane2customcontent = $this->render_from_template(
++            'local_novalxpfeedback/widget',
++            (new \local_novalxpfeedback\output\widget())->export_for_template($this)
++        );
+@@
+-	            'paneintro' => $pane2intro,
+-	            'usepaneblocks' => $usepane2blocks,
++	            'paneintro' => $pane2intro,
++	            'customcontent' => $pane2customcontent,
++	            'usepaneblocks' => $usepane2blocks,
+diff --git a/theme/edutor/templates/fp_featured.mustache b/theme/edutor/templates/fp_featured.mustache
+--- a/theme/edutor/templates/fp_featured.mustache
++++ b/theme/edutor/templates/fp_featured.mustache
+@@
+ 				    {{#paneintro}}
+ 				    <div class="feature-pane-intro">
+ 					    {{{paneintro}}}
+ 				    </div>
+ 				    {{/paneintro}}
++				    {{#customcontent}}
++				    <div class="feature-pane-customcontent">
++					    {{{customcontent}}}
++				    </div>
++				    {{/customcontent}}
+ 				    
+ 				    {{#usepaneblocks}}

@@ -14,6 +14,9 @@ This design avoids direct outbound calls from the Moodle app server to Trello, w
 
 - `local/novalxpfeedback`: Moodle local plugin providing the front-page widget and AJAX submission handler
 - `aws/lambda`: Lambda function that receives feedback payloads and creates Trello cards
+- `patches/edutor-featured-feedback.patch`: Edutor patch for the second featured pane
+- `scripts/aws`: deployment scripts for Secrets Manager, Lambda, and IAM wiring
+- `docs/DEPLOY.md`: end-to-end deployment guide for dev, test, and prod
 
 ## Moodle plugin behavior
 
@@ -28,15 +31,27 @@ This design avoids direct outbound calls from the Moodle app server to Trello, w
 - Builds a Trello card title and description from learner feedback and metadata
 - Creates the card in the configured Trello list
 
-## Important deployment notes
+## Deployment completeness
 
-- The Moodle host must have AWS CLI available
-- The Moodle host instance role must be allowed to invoke the Lambda function
-- Trello credentials should live in Lambda configuration or a secret source, not in Moodle
-- The Edutor theme requires a small renderer/template patch to place the widget in pane 2
+This repo now contains the pieces required to deploy the feature to additional environments:
+
+- Moodle plugin source
+- Lambda source
+- AWS deployment scripts
+- Edutor patch artifact
+- deployment documentation
+
+What still happens against the target environment at deploy time:
+
+- copy the plugin into the target Moodle codebase
+- apply the Edutor patch in the target theme codebase
+- run the AWS deployment scripts with the correct environment values
 
 ## Dev status
 
 The feature has been validated on the dev NovaLXP environment with successful end-to-end card creation in Trello.
 
-See [local/novalxpfeedback/README.md](local/novalxpfeedback/README.md) for plugin and Lambda deployment details.
+Primary references:
+
+- [docs/DEPLOY.md](docs/DEPLOY.md)
+- [local/novalxpfeedback/README.md](local/novalxpfeedback/README.md)
