@@ -1,4 +1,8 @@
-const requiredEnv = ['TRELLO_KEY', 'TRELLO_TOKEN', 'TRELLO_LIST_ID', 'ENDPOINT_TOKEN'];
+import { GetSecretValueCommand, SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
+
+const requiredEnv = ['TRELLO_SECRET_ARN', 'ENDPOINT_TOKEN'];
+const secretsClient = new SecretsManagerClient({});
+let cachedTrelloConfig;
 
 const json = (statusCode, body) => ({
   statusCode,
@@ -47,6 +51,34 @@ const validateEnv = () => {
   }
 };
 
+const getTrelloConfig = async () => {
+  if (cachedTrelloConfig) {
+    return cachedTrelloConfig;
+  }
+
+  const response = await secretsClient.send(new GetSecretValueCommand({
+    SecretId: process.env.TRELLO_SECRET_ARN
+  }));
+
+  if (!response.SecretString) {
+    throw new Error('Trello secret did not contain SecretString');
+  }
+
+  const secret = JSON.parse(response.SecretString);
+  const trelloConfig = {
+    key: secret.TRELLO_KEY || secret.trelloKey,
+    token: secret.TRELLO_TOKEN || secret.trelloToken,
+    listId: secret.TRELLO_LIST_ID || secret.trelloListId
+  };
+
+  if (!trelloConfig.key || !trelloConfig.token || !trelloConfig.listId) {
+    throw new Error('Trello secret is missing one or more required fields');
+  }
+
+  cachedTrelloConfig = trelloConfig;
+  return cachedTrelloConfig;
+};
+
 const isHttpEvent = (event) => !!event?.requestContext || typeof event?.body !== 'undefined';
 
 const parseBody = (event) => {
@@ -68,6 +100,7 @@ const parseBody = (event) => {
 export const handler = async (event) => {
   try {
     validateEnv();
+    const trelloConfig = await getTrelloConfig();
 
     if (isHttpEvent(event)) {
       const authHeader = event.headers?.authorization || event.headers?.Authorization || '';
@@ -90,11 +123,11 @@ export const handler = async (event) => {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: new URLSearchParams({
-        idList: process.env.TRELLO_LIST_ID,
+        idList: trelloConfig.listId,
         name: buildCardName(payload.feedback, payload.fullname),
         desc: buildCardDescription(payload),
-        key: process.env.TRELLO_KEY,
-        token: process.env.TRELLO_TOKEN,
+        key: trelloConfig.key,
+        token: trelloConfig.token,
         pos: 'bottom'
       })
     });

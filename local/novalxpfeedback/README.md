@@ -58,9 +58,7 @@ Lambda source is in `aws/lambda`.
 
 ### Required environment variables
 
-- `TRELLO_KEY`: Trello API key
-- `TRELLO_TOKEN`: Trello API token
-- `TRELLO_LIST_ID`: Trello list ID for `Feedback`
+- `TRELLO_SECRET_ARN`: ARN of a Secrets Manager secret containing Trello configuration
 - `ENDPOINT_TOKEN`: optional bearer token used only if you also expose the Lambda through a Function URL or HTTP entrypoint
 
 ### Example zip and deploy
@@ -78,7 +76,17 @@ aws lambda update-function-code \
 ```bash
 aws lambda update-function-configuration \
   --function-name novalxp-feedback-dev \
-  --environment "Variables={TRELLO_KEY=replace-me,TRELLO_TOKEN=replace-me,TRELLO_LIST_ID=69186475ee521327994deb91,ENDPOINT_TOKEN=replace-me-if-needed}"
+  --environment "Variables={TRELLO_SECRET_ARN=arn:aws:secretsmanager:eu-west-2:ACCOUNT_ID:secret:novalxp/feedback/dev/trello,ENDPOINT_TOKEN=replace-me-if-needed}"
+```
+
+### Secrets Manager secret shape
+
+```json
+{
+  "TRELLO_KEY": "replace-me",
+  "TRELLO_TOKEN": "replace-me",
+  "TRELLO_LIST_ID": "69186475ee521327994deb91"
+}
 ```
 
 ### Moodle server permissions
@@ -102,5 +110,5 @@ The plugin currently invokes Lambda through the AWS CLI using the instance role 
 
 ## Recommended security
 
-- Store `TRELLO_KEY` and `TRELLO_TOKEN` in AWS Secrets Manager or SSM Parameter Store and inject them into Lambda.
-- Remove old Trello credentials from Moodle after switching to Lambda.
+- Store Trello credentials in AWS Secrets Manager and inject only the secret ARN into Lambda.
+- Remove old Trello credentials from Moodle and Lambda environment variables after switching to Secrets Manager.
