@@ -127,12 +127,57 @@ If the patch does not apply cleanly, reproduce the changes manually in:
 - `theme/edutor/classes/output/core_renderer.php`
 - `theme/edutor/templates/fp_featured.mustache`
 
+This patch is a required functional dependency of the front-page feedback feature, not a cosmetic customization.
+
+If Edutor theme files are later refreshed from another repo, tarball, or copied environment snapshot, verify that the feedback hook is still present before treating the deployment as complete.
+
+RCA reference:
+
+- `docs/dev-feedback-widget-regression-rca-2026-03-19.md`
+
+### Dev recovery pattern validated on March 19, 2026
+
+The live dev host did not have the `patch` utility available, and its active Moodle CLI root was:
+
+- code root: `/var/www/moodle/public`
+- cache purge CLI: `/var/www/moodle/admin/cli/purge_caches.php`
+
+The working recovery pattern on dev was:
+
+1. Reauthenticate local AWS SSO used by the SSH-over-SSM path:
+   - `aws sso login --profile finova-sso`
+2. Connect through the configured SSH alias:
+   - `ssh dev-moodle-ec2`
+3. Back up the live Edutor files before editing:
+   - `/var/www/moodle/public/theme/edutor/classes/output/core_renderer.php`
+   - `/var/www/moodle/public/theme/edutor/templates/fp_featured.mustache`
+4. Inspect live state before editing.
+5. If `fp_featured.mustache` already contains the `customcontent` block, make only the missing `core_renderer.php` change rather than reapplying a broader patch.
+6. Ensure the pane 2 renderer contains:
+   - `local_novalxpfeedback/widget`
+   - `'customcontent' => $pane2customcontent`
+7. Purge Moodle caches with:
+
+```bash
+sudo -u apache php /var/www/moodle/admin/cli/purge_caches.php
+```
+
+Notes from the validated dev repair:
+
+- The dev environment was in a partially patched state: `fp_featured.mustache` already rendered `customcontent`, but `core_renderer.php` was still missing the widget hook.
+- The cache purge completed successfully with exit code `0`, but emitted non-fatal warnings about already-missing cache files under `moodledata-dev`.
+
 ## Verification
 
 - Load the front page and open the second featured pane.
 - Confirm the multiline textarea is visible and centered.
 - Submit a test message.
 - Confirm a Trello card appears in the target list.
+
+Additional regression checks after any Edutor theme promotion or restore:
+
+- confirm `theme/edutor/classes/output/core_renderer.php` still renders `local_novalxpfeedback/widget`
+- confirm `theme/edutor/templates/fp_featured.mustache` still renders `customcontent`
 
 ## Post-deployment status
 
